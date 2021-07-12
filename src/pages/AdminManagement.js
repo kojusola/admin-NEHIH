@@ -8,6 +8,7 @@ import ColoredLogo from '../assets/colored-logo.png';
 import Loader from '../components/loader';
 
 const AdminManagement = () => {
+    const hideData = false
     const [pageBar, setPageBar] = useState('manage');
     const [authorizeId, setAuthorizeId] = useState();
     const [unauthorizeId, setUnauthorizeId] = useState();
@@ -91,6 +92,14 @@ const AdminManagement = () => {
         </div>
         </div>
     </div>
+    {
+        hideData && (
+                <div>
+                    {admin }
+                    {adminUnauthorized}
+                </div>
+        )
+    }
         </div>
 
      );
