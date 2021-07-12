@@ -29,7 +29,7 @@ const Drafts = () => {
     // }
 
     const unpublished = data?.data.articles.filter((article)=>{
-        return article.verified = false
+        return article.verified === false;
      })
     // console.log(data.data.articles);
     // const published = data.map((each)=> 

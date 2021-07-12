@@ -77,7 +77,7 @@ const CreateTestimonialForm = ({ toggle}) => {
           type="file"
           id="file"
           className="invisible"
-          {...register("faceImage",{required: true })}
+          {...register("faceImage",{required: true })} 
           name="faceImage"
           ></input>
           </div>

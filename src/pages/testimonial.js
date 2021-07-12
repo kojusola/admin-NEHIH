@@ -16,17 +16,18 @@ const Testimonial = () => {
     const {deleteTestimonial} = useQuery(['deleteTestimonial', testimonialId],()=> api.deleteTestimonial(testimonialId), {
         enabled: Boolean(testimonialId)
     });
-    // if(isLoading){
-    //     return (
-    //         <div>
-    //         <div className="fixed overflow-x-hidden overflow-y-auto inset-0 flex justify-center items-center z-50 bg-black bg-opacity-70">
-    //        <div className="relative mx-auto">
-    //        <Loader/>
-    //        </div>
-    //        </div>
-    //    </div>
-    //     )
-    // };
+    console.log(data?data:null)
+    if(isLoading){
+        return (
+            <div>
+            <div className="fixed overflow-x-hidden overflow-y-auto inset-0 flex justify-center items-center z-50 bg-black bg-opacity-70">
+           <div className="relative mx-auto">
+           <Loader/>
+           </div>
+           </div>
+       </div>
+        )
+    };
     console.log(deleteTestimonial)
     console.log(toggle);
     // if(onSuccess){

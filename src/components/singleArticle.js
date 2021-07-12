@@ -3,6 +3,7 @@ import {
     useQuery
   } from 'react-query';
 import * as api from '../store/article.js';
+import Loader from './loader';
 
 const SingleArticle = ({articleId, toggle}) => {
   const {data, isLoading} = useQuery(['data', articleId],()=> api.getSingleArticles(articleId), {
@@ -11,7 +12,13 @@ const SingleArticle = ({articleId, toggle}) => {
     const dataSingle = data?.data.article
     if(isLoading){
         return (
-            <div>Loading</div>
+          <div>
+          <div className="fixed overflow-x-hidden overflow-y-auto inset-0 flex justify-center items-center z-50 bg-black bg-opacity-70">
+         <div className="relative mx-auto">
+         <Loader/>
+         </div>
+         </div>
+     </div>
         )
     }
     // const { mutate } = useMutation (createArticles, {

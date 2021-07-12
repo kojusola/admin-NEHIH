@@ -15,22 +15,22 @@ const schema = yup.object().shape({
 
 const Login= () => {
 //   const { open, handleClose } = props;
+  const [error, setError] = useState()
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: yupResolver(schema),
     mode: 'onChange'
   });
-  const { mutate } = useMutation (loginAdmin, {
+  const { mutate, isSuccess} = useMutation (loginAdmin, {
     onSuccess: data => {
       console.log(data.data);
       sessionStorage.setItem("accessJWT", data.data.accessJWT);
       sessionStorage.setItem("role", data.data.role);
-      return <Redirect to={{
-        pathname: "/admin"
-        }}/>
+     <Redirect to= "/admin"/>
     },
     onError: (err) => {
-      console.log(err);
+      console.log(err)
+      setError("Login Failed")
     },
     onSettled: () => {
       queryClient.invalidateQueries('create');
@@ -43,7 +43,9 @@ const Login= () => {
     mutate(admin);
     reset();
   };
-
+  if(isSuccess){
+    return <Redirect to= "/admin"/>
+  }
   return (
     <div className="w-full h-screen flex">
         <div className="w-1/2">
@@ -52,6 +54,7 @@ const Login= () => {
           <p className= "text-lilac-logo font-semibold text-lg" >
             Login
           </p>
+          <p className="text-red-400 font-sm">{error? error : ''}</p>
           <div>
           {/* <label className= "inline-block">Email</label> */}
           <input

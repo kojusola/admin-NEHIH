@@ -10,8 +10,9 @@ import Login from './pages/Login';
 import AdminManagement from './pages/AdminManagement';
 import Testimonial from './pages/testimonial';
 
-export const PrivateRoute = ({component:Component, ...rest})=>(
+export const PrivateRoute = ({component:Component,path, ...rest})=>(
   <Route 
+    path={path}
       {...rest}
       render ={props=>
         sessionStorage.getItem("accessJWT")?(
@@ -36,11 +37,11 @@ export default function Body() {
         <Route path="/register" exact component={CreateUser} />
         <PrivateRoute exact path="/admin"  component={PublishedBlog} />
         <PrivateRoute exact path="/admin/create-article"  component={createArticle} />
-        <PrivateRoute exact path="/admin/draft-article"  component={Drafts} />
-        <PrivateRoute exact path="/admin/emails"  component={Emails} />
-        <PrivateRoute exact path="/admin/applications" component={Applications} />
-        <PrivateRoute exact path="/admin/user-management" component={AdminManagement} />
-        <Route exact path="/admin/testimonial" component={Testimonial } />
+        <PrivateRoute  path="/admin/draft-article"  component={Drafts} />
+        <PrivateRoute path="/admin/emails"  component={Emails} />
+        <PrivateRoute  path="/admin/applications" component={Applications} />
+        <PrivateRoute  path="/admin/user-management" component={AdminManagement} />
+        <PrivateRoute   path="/admin/testimonial" component={Testimonial } />
       </Switch>
     );
   }
