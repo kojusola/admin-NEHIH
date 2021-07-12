@@ -10,14 +10,14 @@ import ColoredLogo from '../assets/colored-logo.png';
 
 const PublishedBlog = () => {
     const [pageBar, setPageBar] = useState('home');
-    const [refetchInterval, setRefetchInterval] = useState(2000);
+    const [ instigateRefetch, setInstigateRefetch] = useState(true);
     const [toggle, setToggle] = useState(false)
     const [articleId, setArticleId] = useState()
     const [publishId, setPublishId] = useState()
-    const { data, isLoading} =useQuery('articles', api.getArticles,{
-        refetchInterval: refetchInterval
+    const { data, isLoading, onSuccess} =useQuery('articles', api.getArticles, {
+        enabled: instigateRefetch
     });
-    const {publishedArticle, onSuccess, isFetching} = useQuery(['publishedArticle', publishId],()=> api.publishSingleArticles(publishId), {
+    const publishedArticle = useQuery(['publishedArticle', publishId],()=> api.publishSingleArticles(publishId), {
         enabled: Boolean(publishId)
     });
     if(isLoading){
@@ -31,16 +31,18 @@ const PublishedBlog = () => {
        </div>
         )
     };
-    console.log(publishedArticle)
     if(onSuccess){
-        return  setRefetchInterval(-1)
+        return setInstigateRefetch(false);
     }
-    if(isFetching){
-        return  setRefetchInterval(2000)
+    if(publishedArticle.onSuccess){
+        return setInstigateRefetch(true);
     }
+    // if(isFetching){
+    //     return  setRefetchInterval(2000)
+    // };
     // console.log(data.data.articles);
     const published = data?.data.articles.filter((article)=>{
-       return article.verified === true;
+       return article.verified === true
     })
     console.log(published);
     return ( 

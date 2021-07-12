@@ -1,10 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQueryClient } from 'react-query';
 import { useForm } from 'react-hook-form';
 import { createTestimonial } from '../store/testimonial.js';
-import Loader from './loader';
 
 // interface Article {
 //   name: string;
@@ -18,18 +17,22 @@ const schema = yup.object().shape({
 });
 const CreateTestimonialForm = ({ toggle}) => {
 //   const { open, handleClose } = props;
+const [error, setError] =useState()
+const [success, setSuccess] =useState()
   const queryClient = useQueryClient();
   const { register, handleSubmit ,formState: { errors }, reset} = useForm({
     resolver: yupResolver(schema),
     mode: 'onChange'
   });
-  const { mutate, isLoading } = useMutation (createTestimonial, {
+  const { mutate} = useMutation (createTestimonial, {
     onSuccess: data => {
       console.log(data);
+      setSuccess("Testimonial Created")
       // const message = "success"
       // alert(message);
     },
     onError: (error) => {
+      setError("Testmonial creation failed")
       console.log(error);
     },
     onSettled: () => {
@@ -50,25 +53,16 @@ const CreateTestimonialForm = ({ toggle}) => {
     reset();
   };
 
-  if(isLoading){
-    return (
-        <div>
-        <div className="fixed overflow-x-hidden overflow-y-auto inset-0 flex justify-center items-center z-50 bg-black bg-opacity-70">
-       <div className="relative mx-auto">
-       <Loader/>
-       </div>
-       </div>
-   </div>
-    )
-};
   return (
-    <div className="fixed overflow-x-hidden overflow-y-auto flex justify-center items-center z-50 bg-black bg-opacity-70">
-      <div className="relative overflow-y-auto h-auto  mx-auto w-10/12 sm:w-7/12 border border-transparent rounded-lg shadow-lg">
-        <div className="p-6 pt-3 overflow-y-auto  bg-white rounded-lg shadow-xl">
+    <div className="">
+      <div className=" h-auto  mx-auto w-10/12 sm:w-11/12">
+        <div className="p-3 pt-3 overflow-y-auto ">
         <button onClick={()=>toggle(false)} className="absolute top-0 right-0 hover:text-lilac-light focus:ouline-none" >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
         <form onSubmit={handleSubmit(onSubmit)} className="w-8/12 mx-auto text-left">
+        <p className="text-red-400 font-sm">{error? error : ''}</p>
+        <p className="text-green-400 font-sm">{success? success : ''}</p>
           <div >
           <div className="border border-dashed border-lilac-light p-5 pb-1 my-2  mx-auto text-center">
 
@@ -84,10 +78,10 @@ const CreateTestimonialForm = ({ toggle}) => {
           <div>
           <label className="font-semibold text-gray-400 text-left" style={{
             textAlign:"left"
-          }}>Article Topic</label>
+          }}>Full Name</label>
           <div>
           <input
-          className = "border border-gray-500 mb-3 w-full mt-1 h-8 rounded"
+          className = "border border-gray-500 mb-2 w-full mt-1 h-8 rounded"
           {...register("fullname")}
           name="fullname"
           ></input>
@@ -98,7 +92,7 @@ const CreateTestimonialForm = ({ toggle}) => {
           <label className="font-semibold text-gray-400">Testimonial</label>
           <div>
               <textarea
-              className = "border border-gray-500 mb-3 w-full mt-1 h-96 rounded"
+              className = "border border-gray-500 mb-2 w-full mt-1 h-36 rounded"
               {...register("testimonial")}
               name="testimonial"
               ></textarea>
@@ -108,7 +102,7 @@ const CreateTestimonialForm = ({ toggle}) => {
           </div>
             <div className="text-center mt-1 mb-2">
               <button
-            className = "align-center w-6/12 mb-2  p-2 rounded-lg bg-lilac-light border border-transparent hover:bg-white hover:border hover:border-gray-500 text-white hover:text-black"
+            className = "align-center w-6/12  p-2 rounded-lg bg-lilac-light border border-transparent hover:bg-white hover:border hover:border-gray-500 text-white hover:text-black"
               type="submit"
             >
               Create Testimonial 

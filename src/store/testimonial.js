@@ -1,7 +1,7 @@
 import axios from 'axios';
 
  const api = axios.create({
-    // baseURL : "https://nehih.herokuapp.com/blog"
+    // baseURL : "https://nehih.herokuapp.com/admin"
     baseURL : "http://localhost:5000/admin"
 });
 

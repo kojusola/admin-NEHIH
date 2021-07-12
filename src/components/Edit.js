@@ -6,12 +6,14 @@ import * as api from '../store/article.js';
 import {
     useQuery
   } from 'react-query';
-
+  import Loader from './loader';
 const EditArticle = ({articleId, toggle}) => {
+    const [error, setError] = useState('')
+    const [success, setSuccess] = useState('')
     const {data, isLoading} = useQuery(['data', articleId],()=> api.getSingleArticles(articleId), {
         enabled: Boolean(articleId)
     });
-    const [fields, setFields] = useState();
+    const [fields, setFields] = useState({category:'',articleName:'', articleContent: ''});
     useEffect(() => {
        const article = data? data.data.article: null;
        setFields({...article});
@@ -23,12 +25,11 @@ const EditArticle = ({articleId, toggle}) => {
     });
     const { mutate } = useMutation (updateArticles, {
       onSuccess: data => {
-        console.log(data);
-        const message = "success"
-        alert(message);
+        console.log(data)
+        setSuccess("article successfully updated")
       },
       onError: () => {
-        alert("there was an error")
+        setError("article update Failed")
       },
       onSettled: () => {
         queryClient.invalidateQueries('create');
@@ -39,6 +40,7 @@ const EditArticle = ({articleId, toggle}) => {
         "userId":articleId,
         ...data
       };
+      console.log(article)
       mutate(article);
     };
     const handleChange =(event)=>{
@@ -48,19 +50,27 @@ const EditArticle = ({articleId, toggle}) => {
     console.log(fields);
     // if(data){ setFields(data.data.article)}
     if(isLoading){
-        return (
-            <div>Loading</div>
-        )
-    }
+      return (
+          <div>
+          <div className="fixed overflow-x-hidden overflow-y-auto inset-0 flex justify-center items-center z-50 bg-black bg-opacity-70">
+         <div className="relative mx-auto">
+         <Loader/>
+         </div>
+         </div>
+     </div>
+      )
+  };
     return (
       <div>
-        <div className="fixed overflow-x-hidden overflow-y-auto flex justify-center items-center z-50 bg-black bg-opacity-70">
-          <div className="relative overflow-y-auto h-auto  mx-auto w-10/12 sm:w-8/12 border border-transparent rounded-lg shadow-lg">
+        <div className="fixed overflow-x-hidden inset-0 overflow-y-auto flex justify-center items-center z-50 bg-black bg-opacity-70">
+          <div className="relative overflow-y-auto h-auto  mx-auto w-10/12 sm:w-10/12 border border-transparent rounded-lg shadow-lg">
             <div className="p-6 pt-3 overflow-y-auto  bg-white rounded-lg shadow-xl">
             <button onClick={()=>toggle(false)} className="absolute top-0 right-0 hover:text-lilac-light focus:ouline-none" >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             <form onSubmit={handleSubmit(onSubmit)} className="mb-4 xl:my-8 text-left mx-auto bg-white sm:my-0  text-gray-600 font-medium">
+            <p className="text-red-400 font-sm">{error? error : ''}</p>
+            <p className="text-green-400 font-sm">{success? success : ''}</p>
             <div>
             <div>
             <label className="font-semibold text-gray-400 text-left">Category</label>
@@ -92,7 +102,7 @@ const EditArticle = ({articleId, toggle}) => {
             onChange={handleChange}
             name="articleContent"
             placeholder="Article content"
-            className = "border border-gray-500 mb-3 w-full mt-1 h-96 rounded"
+            className = "border border-gray-500 mb-3 w-full mt-1 h-36 rounded"
             ></textarea>
             </div>
             </div>

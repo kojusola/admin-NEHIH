@@ -6,10 +6,12 @@ import * as api from '../store/newsletter.js';
 import Sidebar from '../components/sidebar';
 import ColoredLogo from '../assets/colored-logo.png';
 import Loader from '../components/loader';
+import { CSVLink } from 'react-csv';
 
 const Emails = () => {
     const [pageBar, setPageBar] = useState('newsletter');
-    const { data, isLoading} =useQuery('newsletter', api.getNewsletter );
+    const [dataCsv, setDataCsv] = useState([]);
+    const { data, isLoading, onSuccess} =useQuery('newsletter', api.getNewsletter );
 
     if(isLoading){
         return (
@@ -22,7 +24,13 @@ const Emails = () => {
        </div>
         )
     };
-
+    if(onSuccess){
+       return setDataCsv(data.data.Emails)
+    
+    };
+    const headers = [
+        {label:'Email',key:'email'}
+    ]
     return ( 
         <div>
             {/* // <div>
@@ -55,7 +63,14 @@ const Emails = () => {
                     <p className="w-4/12 text-gray-500 tracking-wider">S/N</p>
                     <p className="w-8/12 text-gray-500 tracking-wider">Email</p>
                     </div>
-                    <button className="p-1 ml-20 text-xs bg-lilac-logo border rounded-sm border-transparent hover:border-black hover:bg-white text-white hover:text-black ">Export Emails</button>
+                    <CSVLink
+                        headers={headers}
+                        data={dataCsv? dataCsv: null}
+                        filename={"Newsletter_Emails.csv"}
+                    >
+                        <button className="p-1 ml-20 text-xs bg-lilac-logo border rounded-sm border-transparent hover:border-black hover:bg-white text-white hover:text-black ">Export Emails
+                        </button>
+                    </CSVLink>
                     
                 </div>
                

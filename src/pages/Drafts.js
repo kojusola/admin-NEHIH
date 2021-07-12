@@ -11,14 +11,17 @@ import ColoredLogo from '../assets/colored-logo.png';
 
 const Drafts = () => {
     const [pageBar, setPageBar] = useState('drafts');
+    const [refetchInterval, setRefetchInterval] = useState(2000);
     const [toggle, setToggle] = useState(false);
     const [editToggle, setEditToggle] = useState(false);
     const [articleId, setArticleId] = useState()
     const [publishId, setPublishId] = useState()
     const [editId, setEditId] = useState()
-    const { data} =useQuery('articles', api.getArticles);
+    const { data} =useQuery('articles', api.getArticles,{
+        refetchInterval: refetchInterval
+    });
     const {singleArticle} = useQuery(['singleArticle', articleId],()=> api.getSingleArticles(articleId), {
-        enabled: Boolean(articleId)
+        enabled: Boolean(articleId),
     });
     const {publishedArticle} = useQuery(['publishedArticle', publishId],()=> api.publishSingleArticles(publishId), {
         enabled: Boolean(publishId)
@@ -27,7 +30,7 @@ const Drafts = () => {
     // const giveSingleArticle = (article) =>{
     //     setArticle({article})
     // }
-
+    console.log(editToggle)
     const unpublished = data?.data.articles.filter((article)=>{
         return article.verified === false;
      })
@@ -72,7 +75,7 @@ const Drafts = () => {
                         </div>
                     <div  className="">
                     {unpublished?.map(article=>
-                    <div className="w-full py-2 flex border-b border-gray-300">
+                    <div key={article._id} className="w-full py-2 flex border-b border-gray-300">
                         <button key={article._id} onClick={()=>{setToggle(true); setArticleId(article._id)}} className="w-10/12 flex">
                         <div className="w-7/12 flex pr-24">
                         <p className="w-3/12 pr-16 text-gray-900 text-xs tracking-normal">{unpublished.indexOf(article) +1}</p>
@@ -97,12 +100,14 @@ const Drafts = () => {
                 </div>
             )}
             { editToggle === true && (
-                <div className="overflow-y-auto">
+                <div>
                     <Edit
                         articleId={editId}
                         toggle={setEditToggle}
-                        singleArticle= {singleArticle}
+                        setRefetchInterval={setRefetchInterval}
+                        refetchInterval={refetchInterval}
                     />
+                   
                 </div>
             )}
             </div>
