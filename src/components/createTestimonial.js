@@ -16,9 +16,12 @@ const schema = yup.object().shape({
   testimonial: yup.string().min(6).required(),
 });
 const CreateTestimonialForm = ({ toggle}) => {
-//   const { open, handleClose } = props;
+const [file, setFile] = useState('');
 const [error, setError] =useState()
-const [success, setSuccess] =useState()
+const [success, setSuccess] =useState();
+const handleChange = (event) =>{
+  setFile(URL.createObjectURL(event.target.files[0]));
+}
   const queryClient = useQueryClient();
   const { register, handleSubmit ,formState: { errors }, reset} = useForm({
     resolver: yupResolver(schema),
@@ -56,25 +59,37 @@ const [success, setSuccess] =useState()
   return (
     <div className="">
       <div className=" h-auto  mx-auto w-10/12 sm:w-11/12">
-        <div className="p-3 pt-3 overflow-y-auto ">
-        <button onClick={()=>toggle(false)} className="absolute top-0 right-0 hover:text-lilac-light focus:ouline-none" >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <div className="relative p-3 pt-3 overflow-y-auto ">
+        <button onClick={()=>toggle(false)} className="absolute top-0 left-0 hover:text-lilac-light focus:ouline-none" >
+        <svg className="stroke-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M12 5l-7 7 7 7"/></svg>
         </button>
         <form onSubmit={handleSubmit(onSubmit)} className="w-8/12 mx-auto text-left">
         <p className="text-red-400 font-sm">{error? error : ''}</p>
         <p className="text-green-400 font-sm">{success? success : ''}</p>
           <div >
-          <div className="border border-dashed border-lilac-light p-5 pb-1 my-2  mx-auto text-center">
+          {
+            file === '' && (
+              <div className="border border-dashed border-lilac-light p-5 pb-1 my-2  mx-auto text-center">
 
-          <label for="file" className="font-semibold text-lilac-light">Choose a profile image for your testimonial.</label>
-          <input
-          type="file"
-          id="file"
-          className="invisible"
-          {...register("faceImage",{required: true })} 
-          name="faceImage"
-          ></input>
-          </div>
+            <label for="file" className="font-semibold text-lilac-light">Choose a profile image for your testimonial.</label>
+            <input
+            type="file"
+            id="file"
+            className="invisible"
+            {...register("faceImage",{required: true })} 
+            name="faceImage"
+            onChange={handleChange}
+            ></input>
+            </div>
+            )
+          }
+          {
+            file !== '' && (
+              <div className="mx-auto w-full flex flex-col items-center">
+                <img src={file} alt= "testimonial"></img>
+              </div>
+            )
+          }
           <div>
           <label className="font-semibold text-gray-400 text-left" style={{
             textAlign:"left"

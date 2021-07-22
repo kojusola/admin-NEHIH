@@ -14,42 +14,27 @@ const Drafts = () => {
     const [refetchInterval, setRefetchInterval] = useState(2000);
     const [toggle, setToggle] = useState(false);
     const [editToggle, setEditToggle] = useState(false);
-    const [articleId, setArticleId] = useState()
-    const [publishId, setPublishId] = useState()
-    const [editId, setEditId] = useState()
+    const [articleId, setArticleId] = useState();
+    const [publishId, setPublishId] = useState();
+    const [editId, setEditId] = useState();
+    const [disable, setDisable] =useState([]);
     const { data} =useQuery('articles', api.getArticles,{
         refetchInterval: refetchInterval
     });
     const {singleArticle} = useQuery(['singleArticle', articleId],()=> api.getSingleArticles(articleId), {
-        enabled: Boolean(articleId),
+        enabled: Boolean(articleId)
     });
-    const {publishedArticle} = useQuery(['publishedArticle', publishId],()=> api.publishSingleArticles(publishId), {
+    const unPublishedArticle = useQuery(['publishedArticle', publishId],()=> api.publishSingleArticles(publishId), {
         enabled: Boolean(publishId)
     });
-    console.log(publishedArticle)
-    // const giveSingleArticle = (article) =>{
-    //     setArticle({article})
-    // }
-    console.log(editToggle)
+    if(unPublishedArticle.onSuccess){
+        return
+    }
     const unpublished = data?.data.articles.filter((article)=>{
         return article.verified === false;
      })
-    // console.log(data.data.articles);
-    // const published = data.map((each)=> 
-    // <div key={data.data.articles._id}>data.data.articles._id</div>)
     return ( 
-        // <div>{published}</div>
         <div>
-        {/* {data.data.articles?.map(article=> 
-            <div key={article._id}>
-                <li >{article._id}</li>
-                <button onClick={()=>setArticleId(article._id)} >view</button>
-                <button onClick={()=>setPublishId(article._id)} >publish/unpublish</button>
-                <button onClick={()=>setEditId(article._id)} >Edit</button>
-                <Edit articleId={editId}/>
-            </div>
-        )} */}
-
             <div className="flex h-screen flex-col">
             <div className="flex-shrink-0">
             <div className="w-full flex justify-between bg-gray-800 py-4 text-white font-semibold text-lg">
@@ -83,8 +68,8 @@ const Drafts = () => {
                         </div>
                         <p className="w-5/12 px-3 text-gray-900 text-xs tracking-normal">{article.articleName}</p>
                         </button>
-                        <button onClick={()=>{setEditToggle(true);setEditId(article._id)}} className="w-1/12 p-1 mr-2 text-xs hover:bg-lilac-logo border rounded-sm hover:border-transparent border-black bg-white hover:text-white text-black ">Edit</button>
-                        <button onClick={()=>setPublishId(article._id)} className="w-1/12 p-1 text-xs bg-lilac-logo border rounded-sm border-transparent hover:border-black hover:bg-white text-white hover:text-black ">Publish</button>
+                        <button  onClick={()=>{setEditToggle(true);setEditId(article._id);}} className="w-1/12 p-1 mr-2 text-xs hover:bg-lilac-logo border rounded-sm hover:border-transparent border-black bg-white hover:text-white text-black ">Edit</button>
+                        <button disabled={disable.indexOf(article._id) !== -1} onClick={()=>{setPublishId(article._id); setDisable([...disable, article._id])}} className="w-1/12 p-1 text-xs bg-lilac-logo border rounded-sm border-transparent hover:border-black hover:bg-white text-white hover:text-black disabled:opacity-50">Publish</button>
                     </div>
                     )}
                     </div>

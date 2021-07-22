@@ -6,14 +6,18 @@ import * as api from '../store/article.js';
 import {
     useQuery
   } from 'react-query';
-  import Loader from './loader';
+import Loader from './loader';
+import UpdateImage from './imageUpdate';
+
 const EditArticle = ({articleId, toggle}) => {
     const [error, setError] = useState('')
+    const [imageUpdate, setImageUpdate] = useState(false)
     const [success, setSuccess] = useState('')
     const {data, isLoading} = useQuery(['data', articleId],()=> api.getSingleArticles(articleId), {
         enabled: Boolean(articleId)
     });
     const [fields, setFields] = useState({category:'',articleName:'', articleContent: ''});
+    const articles = data? data.data.article: null;
     useEffect(() => {
        const article = data? data.data.article: null;
        setFields({...article});
@@ -36,18 +40,18 @@ const EditArticle = ({articleId, toggle}) => {
       }
     });
     const onSubmit = (data) => {
-      const article = {
+      const updatedArticle = {
         "userId":articleId,
         ...data
       };
-      console.log(article)
-      mutate(article);
+      console.log(updatedArticle)
+      mutate(updatedArticle);
     };
     const handleChange =(event)=>{
         const {name, value} = event.target;
         setFields({fields, [name]: value})
     }
-    console.log(fields);
+    
     // if(data){ setFields(data.data.article)}
     if(isLoading){
       return (
@@ -57,20 +61,29 @@ const EditArticle = ({articleId, toggle}) => {
          <Loader/>
          </div>
          </div>
-     </div>
+          </div>
       )
   };
     return (
-      <div>
-        <div className="fixed overflow-x-hidden inset-0 overflow-y-auto flex justify-center items-center z-50 bg-black bg-opacity-70">
-          <div className="relative overflow-y-auto h-auto  mx-auto w-10/12 sm:w-10/12 border border-transparent rounded-lg shadow-lg">
-            <div className="p-6 pt-3 overflow-y-auto  bg-white rounded-lg shadow-xl">
+      <div className="fixed inset-0 overflow-y-auto w-full h-screen">
+        <div className=" overflow-x-hidden min-h-screen  overflow-y-auto flex justify-center items-center z-50 bg-black bg-opacity-70">
+          <div className="relative  mx-auto w-10/12 sm:w-10/12 border border-transparent rounded-lg shadow-lg">
+            <div className="p-6 pt-3 overflow-y-auto bg-white rounded-lg shadow-xl">
             <button onClick={()=>toggle(false)} className="absolute top-0 right-0 hover:text-lilac-light focus:ouline-none" >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             <form onSubmit={handleSubmit(onSubmit)} className="mb-4 xl:my-8 text-left mx-auto bg-white sm:my-0  text-gray-600 font-medium">
-            <p className="text-red-400 font-sm">{error? error : ''}</p>
             <p className="text-green-400 font-sm">{success? success : ''}</p>
+            <p className="text-red-400 font-sm">{error? error : ''}</p>
+            <div className="text-center mt-1 mb-2">
+              <button
+              onClick={()=>setImageUpdate(true)}
+              className = "align-center w-3/12 mb-1  p-2 rounded-lg bg-lilac-light border border-transparent hover:bg-white hover:border hover:border-gray-500 text-white hover:text-black"
+                type="button"
+              >
+              Update Image
+              </button>
+              </div>
             <div>
             <div>
             <label className="font-semibold text-gray-400 text-left">Category</label>
@@ -102,7 +115,7 @@ const EditArticle = ({articleId, toggle}) => {
             onChange={handleChange}
             name="articleContent"
             placeholder="Article content"
-            className = "border border-gray-500 mb-3 w-full mt-1 h-36 rounded"
+            className = "border border-gray-500 mb-3 w-full mt-1 h-60 rounded"
             ></textarea>
             </div>
             </div>
@@ -111,13 +124,21 @@ const EditArticle = ({articleId, toggle}) => {
             className = "align-center w-6/12 mb-2  p-2 rounded-lg bg-lilac-light border border-transparent hover:bg-white hover:border hover:border-gray-500 text-white hover:text-black"
               type="submit"
             >
-              Create
+              Update Article
             </button>
               </div>
           </form>
         </div>
         </div>
         </div>
+        {
+          imageUpdate === true &&(
+            <UpdateImage
+              setImageUpdate={setImageUpdate}
+              article={articles}
+            />
+          )
+        }
       </div>
     );
 }

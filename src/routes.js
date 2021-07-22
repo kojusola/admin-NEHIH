@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { Route, Switch, Redirect } from "react-router";
 import PublishedBlog from './pages/PublishedBlog';
 import Drafts from './pages/Drafts';
@@ -9,26 +9,50 @@ import CreateUser from './pages/CreateUser';
 import Login from './pages/Login';
 import AdminManagement from './pages/AdminManagement';
 import Testimonial from './pages/testimonial';
+import auths from './store/token';
+import jwtDecode from 'jwt-decode';
 
-export const PrivateRoute = ({component:Component,path, ...rest})=>(
+const PrivateRoute = ({component:Component,path, ...rest})=>{
+  const auth = auths();
+  const [isAuthenticated, setIsAuthenticated] = useState(null)  
+  useEffect(() => {
+    let token = localStorage.getItem('accessJWT')
+        if(token){
+            let tokenExpiration = jwtDecode(token).exp;
+            let dateNow = new Date();
+
+            if(tokenExpiration < dateNow.getTime()/1000){
+                setIsAuthenticated(false)
+            }else{
+                setIsAuthenticated(true)
+            }
+        } else {
+           setIsAuthenticated(false)
+        }
+  }, [auth])
+  if(isAuthenticated === null){
+    return <></>
+  }
+return (
   <Route 
-    path={path}
-      {...rest}
-      render ={props=>
-        sessionStorage.getItem("accessJWT")?(
-          <Component {...props}/>
-        ) : (
-          <Redirect
-          to={{
-              pathname:"/",
-              state:{from:props.location}
-          }}
-          />
-        )
+  path={path}
+    {...rest}
+    render ={props=>
+      isAuthenticated?(
+        <Redirect
+        to={{
+            pathname:"/",
+            state:{from:props.location}
+        }}
+        />
+      ) : (
+        <Component {...props}/>
+      )
 
-      }
-   />
+    }
+ />
 )
+}
 
 export default function Body() {
     return (

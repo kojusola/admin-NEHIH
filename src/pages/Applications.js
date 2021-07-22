@@ -88,7 +88,7 @@ const Applications = () => {
         { toggle === true && (
             <div>
                 <SingleApplication
-                    ApplicationId={applicationId}
+                    applicationId={applicationId}
                     toggle={setToggle}
                 />
             </div>

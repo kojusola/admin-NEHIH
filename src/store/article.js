@@ -5,7 +5,10 @@ import axios from 'axios';
     // baseURL : "http://localhost:5000/blog"
 });
 
-const accessJWT = sessionStorage.getItem("accessJWT");
+const accessJWT = () =>{
+    const auth = sessionStorage.getItem("accessJWT");
+    return auth
+};
 
 export const getArticles = () => api.get('/').then(res => res.data);
 
@@ -32,29 +35,33 @@ export const publishSingleArticles = (articleId) => api.get('/publish',{
 
     headers : {
         "Content-Type": "multipart/form-data",
-        "Authorization": accessJWT
+        "Authorization": accessJWT()
     }
 }).then(res => res.data);
 export const createArticles = (article) => api.post('/create', article,{headers : {
     "Content-Type": "multipart/form-data",
-    "Authorization": accessJWT
+    "Authorization": accessJWT()
 }}).then(res => res.data);
-export const updateArticles = ({userId, ...updatedArticle}) => api.post('/update', updatedArticle,{
+
+export const updateArticles = ( updatedArticle) => api.post('/update', {
+    articleName: updatedArticle.articleName,
+    articleContent: updatedArticle.articleContent,
+    category: updatedArticle.category,
+},{
     params:{
-    articleId: userId
+    articleId: updatedArticle.userId
 },
 headers : {
-    "Content-Type": "multipart/form-data",
-    "Authorization": accessJWT
+    "Authorization": accessJWT()
 }
 }).then(res => res.data);
 
-export const updateArticleImg = ({userId, updatedImage}) => api.post('/updateImage', updatedImage,{
+export const updateArticleImg = (updatedArticle) => api.post('/updateImage',updatedArticle.formData,{
     params:{
-    articleId: userId
+    articleId: updatedArticle.userId
 },
 headers : {
     "Content-Type": "multipart/form-data",
-    "Authorization": accessJWT
+    "Authorization": accessJWT()
 }
 }).then(res => res.data);

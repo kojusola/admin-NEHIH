@@ -10,12 +10,13 @@ import ColoredLogo from '../assets/colored-logo.png';
 
 const PublishedBlog = () => {
     const [pageBar, setPageBar] = useState('home');
-    const [ instigateRefetch, setInstigateRefetch] = useState(true);
+    const [refetchInterval, setRefetchInterval] = useState(2000);
     const [toggle, setToggle] = useState(false)
     const [articleId, setArticleId] = useState()
-    const [publishId, setPublishId] = useState()
+    const [publishId, setPublishId] = useState();
+    const [disable, setDisable] =useState([]);
     const { data, isLoading, onSuccess} =useQuery('articles', api.getArticles, {
-        enabled: instigateRefetch
+        refetchInterval: refetchInterval
     });
     const publishedArticle = useQuery(['publishedArticle', publishId],()=> api.publishSingleArticles(publishId), {
         enabled: Boolean(publishId)
@@ -32,10 +33,10 @@ const PublishedBlog = () => {
         )
     };
     if(onSuccess){
-        return setInstigateRefetch(false);
+        return setRefetchInterval(2000);
     }
     if(publishedArticle.onSuccess){
-        return setInstigateRefetch(true);
+        return setRefetchInterval(2000);
     }
     // if(isFetching){
     //     return  setRefetchInterval(2000)
@@ -90,7 +91,7 @@ const PublishedBlog = () => {
                         </div>
                         
                         </button>
-                        <button onClick={()=>setPublishId(article._id)} className="w-2/12 p-1 text-xs bg-lilac-logo border rounded-sm border-transparent hover:border-black hover:bg-white text-white hover:text-black ">Unpublish</button>
+                        <button disabled={disable.indexOf(article._id) !== -1} onClick={()=>{setPublishId(article._id); setDisable([...disable, article._id])}} className="w-2/12 p-1 text-xs bg-lilac-logo border rounded-sm border-transparent hover:border-black hover:bg-white text-white hover:text-black disabled:opacity-50 ">Unpublish</button>
                     </div>
                 )}
             </div>
